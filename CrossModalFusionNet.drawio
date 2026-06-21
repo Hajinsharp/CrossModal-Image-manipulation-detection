@@ -1,0 +1,359 @@
+<mxfile host="app.diagrams.net" modified="2026-04-27" version="21.0.0">
+  <diagram name="1. Model Evolution" id="diag_p1">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="p1_title" value="CrossModalFusionNet — 5-Model Progressive Ablation" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="80" y="10" width="750" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_m1" value="&lt;b&gt;Model 1 — Random Forest on ELA&lt;/b&gt;&lt;br&gt;Streams: Hand-crafted ELA statistics (mean error, edge ratio, histogram bins)&lt;br&gt;Fusion: Feature table fed to RF classifier (100 trees, max_depth=10)&lt;br&gt;Limitation: Brittle under re-compression; no learned representation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="80" y="60" width="540" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="p1_m1" target="p1_m2" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_l1" value="&lt;b&gt;+&lt;/b&gt; End-to-end CNN; replaces hand-crafted features with learned RGB representation" style="text;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;fontSize=10;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="630" y="112" width="340" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_m2" value="&lt;b&gt;Model 2 — Single-Stream EfficientNet-B0&lt;/b&gt;&lt;br&gt;Streams: RGB only (224×224 ImageNet-pretrained)&lt;br&gt;Fusion: Global average pool → Linear(1280 → 2)&lt;br&gt;Limitation: No forensic signal; RGB alone misses subtle artifacts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="80" y="180" width="540" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_e2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="p1_m2" target="p1_m3" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_l2" value="&lt;b&gt;+&lt;/b&gt; Noise residual + DCT log-magnitude streams; sigmoid gate per channel" style="text;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;fontSize=10;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="630" y="232" width="340" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_m3" value="&lt;b&gt;Model 3 — 3-Stream CNN with Sigmoid Gating&lt;/b&gt;&lt;br&gt;Streams: RGB + Noise residual + DCT log-magnitude&lt;br&gt;Fusion: Concatenate 3840-dim → sigmoid gates → weighted sum&lt;br&gt;Limitation: Gate weights fixed per stream; no sample-adaptive reweighting" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="80" y="300" width="540" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_e3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="p1_m3" target="p1_m4" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_l3" value="&lt;b&gt;+&lt;/b&gt; Learnable softmax attention — stream weights adapt per image" style="text;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;fontSize=10;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="630" y="352" width="340" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_m4" value="&lt;b&gt;Model 4 — AdaptiveFusionNet&lt;/b&gt;&lt;br&gt;Streams: RGB + Noise residual + DCT log-magnitude&lt;br&gt;Fusion: Learnable softmax attention over concatenated 3840-dim features&lt;br&gt;Limitation: Streams weighted independently; no inter-modality interaction" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="80" y="420" width="540" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="p1_m4" target="p1_m5" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_l4" value="&lt;b&gt;+&lt;/b&gt; ViT-B/16 global context stream (4th modality via CLS token)" style="text;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;fontSize=10;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="630" y="472" width="340" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_m5" value="&lt;b&gt;Model 5 — ViTMultiModalFusionNet&lt;/b&gt;&lt;br&gt;Streams: RGB + Noise + DCT + ViT-B/16 (CLS token, projected 768→1280)&lt;br&gt;Fusion: Sample-adaptive softmax attention over 4 stream features&lt;br&gt;Limitation: Still scalar attention; streams don&apos;t interact during fusion" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="80" y="540" width="540" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_e5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="p1_m5" target="p1_m6" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_l5" value="&lt;b&gt;★ Novel A:&lt;/b&gt; ELA as 5th learned CNN stream&lt;br&gt;&lt;b&gt;★ Novel B:&lt;/b&gt; Cross-Modal Transformer Encoder — modalities attend to each other" style="text;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;fontSize=10;spacingLeft=5;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="582" width="340" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_m6" value="&lt;b&gt;★ CrossModalFusionNet — PRIMARY CONTRIBUTION&lt;/b&gt;&lt;br&gt;Streams: RGB + ELA (★ novel CNN stream) + Noise + DCT + ViT (5 streams)&lt;br&gt;Fusion: ★ Modality Transformer Encoder (2L, 8H, d=1280) — cross-modal self-attention&lt;br&gt;Novel A: ELA end-to-end in CNN backbone | Novel B: Inter-modality transformer fusion" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;align=left;spacingLeft=8;spacingTop=4;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="80" y="660" width="540" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_leg_title" value="Color Key" style="text;html=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="80" y="790" width="80" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_leg1" value="Classical baseline" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="80" y="815" width="150" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_leg2" value="Deep learning model" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="245" y="815" width="150" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_leg3" value="★ Novel contribution" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="410" y="815" width="150" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1_leg4" value="What was added at this step" style="text;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=center;" vertex="1" parent="1">
+          <mxGeometry x="575" y="815" width="200" height="25" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="2. CrossModalFusionNet Architecture" id="diag_p2">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="950" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="p2_title" value="CrossModalFusionNet — Detailed Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontStyle=1;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="200" y="10" width="650" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_input" value="Input Image&lt;br&gt;JPEG | PNG | WebP | BMP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="370" y="55" width="230" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_s1h" value="RGB Stream" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="125" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_s2h" value="ELA Stream ★" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="200" y="125" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_s3h" value="Noise Residual" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="380" y="125" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_s4h" value="DCT Log-Mag" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="125" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_s5h" value="ViT Global" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="740" y="125" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_prep1" value="Resize 224×224&lt;br&gt;Normalize ImageNet" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="20" y="185" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_prep2" value="JPEG re-save q=95&lt;br&gt;pixel diff → [0,255]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="200" y="185" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_prep3" value="Gaussian blur(5,5)&lt;br&gt;subtraction" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="380" y="185" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_prep4" value="log|DCT(gray)|&lt;br&gt;normalize" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="185" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_prep5" value="Resize 224×224&lt;br&gt;ViT patch embed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="740" y="185" width="150" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_b1" value="EfficientNet-B0&lt;br&gt;ImageNet pretrained&lt;br&gt;freeze_until=4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="20" y="250" width="150" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_b2" value="EfficientNet-B0&lt;br&gt;ImageNet pretrained&lt;br&gt;freeze_until=4 ★" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="200" y="250" width="150" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_b3" value="EfficientNet-B0&lt;br&gt;ImageNet pretrained&lt;br&gt;freeze_until=4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="380" y="250" width="150" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_b4" value="EfficientNet-B0&lt;br&gt;ImageNet pretrained&lt;br&gt;freeze_until=4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="250" width="150" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_b5" value="ViT-B/16&lt;br&gt;google/vit-base-patch16-224&lt;br&gt;CLS token → (B, 768)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="740" y="250" width="150" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_vit_proj" value="vit_proj: Linear(768→1280)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="740" y="330" width="150" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_f1" value="(B, 1280)" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=center;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="45" y="330" width="100" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_f2" value="(B, 1280)" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=center;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="225" y="330" width="100" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_f3" value="(B, 1280)" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=center;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="405" y="330" width="100" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_f4" value="(B, 1280)" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=center;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="585" y="330" width="100" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_f5" value="(B, 1280)" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=center;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="765" y="375" width="100" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_stack" value="Stack: 5 × (B, 1280)  →  (B, 5, 1280)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="200" y="420" width="560" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_transformer" value="★  Modality Transformer Encoder  (NOVEL)&lt;br&gt;2 layers | 8 heads | d_model=1280 | learnable positional embeddings per modality&lt;br&gt;Each stream attends to all others via multi-head self-attention — inter-modality reasoning" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="170" y="485" width="620" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_pool" value="Mean Pool over modality dimension  →  (B, 1280)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="270" y="575" width="420" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_cls" value="Classifier Head&lt;br&gt;Linear(1280→256)  →  ReLU  →  Dropout(0.4)  →  Linear(256→N)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="220" y="635" width="520" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_output" value="Softmax  →  prediction + confidence + class probabilities&lt;br&gt;Authentic  |  Manipulated  |  AI-Generated" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="200" y="710" width="560" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_i1" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_input" target="p2_s1h" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_i2" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_input" target="p2_s2h" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_i3" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_input" target="p2_s3h" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_i4" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_input" target="p2_s4h" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_i5" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_input" target="p2_s5h" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_s1p" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_s1h" target="p2_prep1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_s2p" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_s2h" target="p2_prep2" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_s3p" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_s3h" target="p2_prep3" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_s4p" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_s4h" target="p2_prep4" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_s5p" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_s5h" target="p2_prep5" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_p1b" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_prep1" target="p2_b1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_p2b" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_prep2" target="p2_b2" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_p3b" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_prep3" target="p2_b3" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_p4b" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_prep4" target="p2_b4" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_p5b" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_prep5" target="p2_b5" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_b1f" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_b1" target="p2_f1" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_b2f" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_b2" target="p2_f2" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_b3f" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_b3" target="p2_f3" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_b4f" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_b4" target="p2_f4" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_b5p" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_b5" target="p2_vit_proj" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_vp5" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_vit_proj" target="p2_f5" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_f1s" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_f1" target="p2_stack" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_f2s" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_f2" target="p2_stack" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_f3s" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_f3" target="p2_stack" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_f4s" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_f4" target="p2_stack" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_f5s" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_f5" target="p2_stack" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_st" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_stack" target="p2_transformer" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_tr" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_transformer" target="p2_pool" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_pc" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_pool" target="p2_cls" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_e_co" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p2_cls" target="p2_output" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_leg_title" value="Legend" style="text;html=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="20" y="790" width="60" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_leg1" value="EfficientNet-B0 stream" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="20" y="815" width="170" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_leg2" value="★ Novel component" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="205" y="815" width="170" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_leg3" value="ViT stream" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="390" y="815" width="170" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_leg4" value="Input / Output" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="575" y="815" width="170" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2_leg5" value="Pre-processing / utility" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="760" y="815" width="170" height="25" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="3. 3-Class Fine-Tuning" id="diag_p3">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="p3_title" value="3-Class Extension — Partial Fine-Tuning on CASIA2 + CIFAKE" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontStyle=1;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="130" y="10" width="750" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_frozen_title" value="FROZEN  (80% params — ~103M weights)" style="text;html=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+          <mxGeometry x="50" y="58" width="360" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_train_title" value="TRAINABLE  (20% params — ~26.6M weights)" style="text;html=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+          <mxGeometry x="460" y="58" width="380" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_frozen_box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="50" y="88" width="360" height="270" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_effnet_rgb" value="❄  EfficientNet-B0  (RGB stream)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="70" y="100" width="230" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_effnet_ela" value="❄  EfficientNet-B0  (ELA stream)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="70" y="145" width="230" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_effnet_noise" value="❄  EfficientNet-B0  (Noise stream)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="70" y="190" width="230" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_effnet_dct" value="❄  EfficientNet-B0  (DCT stream)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="70" y="235" width="230" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_vit" value="❄  ViT-B/16  +  Linear(768→1280)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="70" y="280" width="230" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_train_box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;dashed=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="460" y="88" width="380" height="270" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_modal_t" value="🔥  Modality Transformer Encoder&lt;br&gt;Re-adapted to 3-class fusion objective&lt;br&gt;2 layers, 8 heads, d_model=1280" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="480" y="108" width="320" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_cls_head" value="🔥  Classifier Head  (REPLACED)&lt;br&gt;Linear(1280→256) → ReLU → Dropout(0.4)&lt;br&gt;Linear(256 → 3)  ← output dim changed 2→3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="480" y="193" width="320" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_hparams" value="AdamW  lr=1e-4  wd=1e-4&lt;br&gt;CrossEntropyLoss  label_smoothing=0.05&lt;br&gt;ReduceLROnPlateau (factor=0.5, patience=2)&lt;br&gt;10 epochs max | early-stop patience=3" style="text;html=1;strokeColor=#82b366;fillColor=#f0fff0;align=center;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="480" y="275" width="320" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_flow_edge" value="5×(B,1280) features" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" source="p3_frozen_box" target="p3_modal_t" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_data_title" value="Training Dataset — 3-Class Balanced Mix (ThreeClassDataset)" style="text;html=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+          <mxGeometry x="80" y="385" width="700" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_c0" value="Class 0 — Authentic&lt;br&gt;Source: CASIA2 real photographs&lt;br&gt;No modification; clean forensic signals" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="420" width="240" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_c1" value="Class 1 — Traditionally Manipulated&lt;br&gt;Source: CASIA2 tampered images&lt;br&gt;Copy-move, splicing, inpainting" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="340" y="420" width="240" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_c2" value="Class 2 — AI-Generated&lt;br&gt;Source: CIFAKE  train/FAKE  (60k)&lt;br&gt;Stable Diffusion v1.4 — no re-compression artifacts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="620" y="420" width="260" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_balance" value="Classes balanced at  min(n_auth, n_manip, n_ai)  to prevent class imbalance | 80% train / 20% val split" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=center;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="130" y="510" width="640" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_output" value="Output: Authentic  |  Traditionally Manipulated  |  AI-Generated&lt;br&gt;Auto-detected via  state[&apos;classifier.3.weight&apos;].shape[0] == 3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="230" y="560" width="500" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_e_cls_out" value="" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="p3_cls_head" target="p3_output" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_e_c0" value="trains on" style="edgeStyle=orthogonalEdgeStyle;dashed=1;fontSize=10;" edge="1" source="p3_c0" target="p3_cls_head" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_e_c1" value="trains on" style="edgeStyle=orthogonalEdgeStyle;dashed=1;fontSize=10;" edge="1" source="p3_c1" target="p3_cls_head" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_e_c2" value="trains on" style="edgeStyle=orthogonalEdgeStyle;dashed=1;fontSize=10;" edge="1" source="p3_c2" target="p3_cls_head" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3_why_note" value="Why the original 2-class model misclassifies AI images as Authentic:&lt;br&gt;AI images synthesized from scratch — never JPEG-compressed → ELA ≈ 0 | uniform noise floor → Noise flat | no compositing → DCT clean | all forensic signals read as untouched photograph" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;fontSize=10;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="50" y="640" width="850" height="50" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
