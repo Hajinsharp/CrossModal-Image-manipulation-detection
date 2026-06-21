@@ -28,29 +28,29 @@ The diagram below outlines the primary contribution of this thesis: **CrossModal
 
 ```mermaid
 graph TD
-    Input[Input Image <br> JPEG | PNG | WebP] --> S1[RGB Stream]
-    Input --> S2[ELA Stream ⭐ Novel]
-    Input --> S3[Noise Residual]
-    Input --> S4[DCT Log-Mag]
-    Input --> S5[ViT Global]
+    Input["Input Image <br> JPEG / PNG / WebP"] --> S1["RGB Stream"]
+    Input --> S2["ELA Stream ⭐ Novel"]
+    Input --> S3["Noise Residual"]
+    Input --> S4["DCT Log-Mag"]
+    Input --> S5["ViT Global"]
 
-    S1 --> P1[Resize 224x224 <br> Normalize]
-    S2 --> P2[JPEG re-save q=95 <br> Pixel Diff]
-    S3 --> P3[Gaussian Blur <br> Subtraction]
-    S4 --> P4[log|DCT| <br> Normalize]
-    S5 --> P5[Resize 224x224 <br> Patch Embed]
+    S1 --> P1["Resize 224x224 <br> Normalize"]
+    S2 --> P2["JPEG re-save q=95 <br> Pixel Diff"]
+    S3 --> P3["Gaussian Blur <br> Subtraction"]
+    S4 --> P4["log(abs(DCT)) <br> Normalize"]
+    S5 --> P5["Resize 224x224 <br> Patch Embed"]
 
-    P1 --> B1[EfficientNet-B0 <br> freeze_until=4]
-    P2 --> B2[EfficientNet-B0 <br> freeze_until=4]
-    P3 --> B3[EfficientNet-B0 <br> freeze_until=4]
-    P4 --> B4[EfficientNet-B0 <br> freeze_until=4]
-    P5 --> B5[ViT-B/16 <br> CLS Token]
+    P1 --> B1["EfficientNet-B0 <br> freeze_until=4"]
+    P2 --> B2["EfficientNet-B0 <br> freeze_until=4"]
+    P3 --> B3["EfficientNet-B0 <br> freeze_until=4"]
+    P4 --> B4["EfficientNet-B0 <br> freeze_until=4"]
+    P5 --> B5["ViT-B/16 <br> CLS Token"]
 
-    B1 --> F1(B, 1280)
-    B2 --> F2(B, 1280)
-    B3 --> F3(B, 1280)
-    B4 --> F4(B, 1280)
-    B5 --> Proj[Linear Proj] --> F5(B, 1280)
+    B1 --> F1("(B, 1280)")
+    B2 --> F2("(B, 1280)")
+    B3 --> F3("(B, 1280)")
+    B4 --> F4("(B, 1280)")
+    B5 --> Proj["Linear Proj"] --> F5("(B, 1280)")
 
     F1 --> Stack
     F2 --> Stack
@@ -58,11 +58,11 @@ graph TD
     F4 --> Stack
     F5 --> Stack
 
-    Stack{Stack to sequence <br> B, 5, 1280} --> Trans[⭐ Modality Transformer Encoder <br> 2L, 8H, cross-modal self-attention]
+    Stack{"Stack to sequence <br> B, 5, 1280"} --> Trans["⭐ Modality Transformer Encoder <br> 2L, 8H, cross-modal attention"]
     
-    Trans --> Pool[Mean Pool <br> B, 1280]
-    Pool --> Head[Classifier Head <br> Linear -> ReLU -> Dropout -> Linear]
-    Head --> Out[Softmax Output <br> Authentic | Manipulated | AI-Generated]
+    Trans --> Pool["Mean Pool <br> B, 1280"]
+    Pool --> Head["Classifier Head <br> Linear -> ReLU -> Dropout -> Linear"]
+    Head --> Out["Softmax Output <br> Authentic / Manipulated / AI-Generated"]
     
-    classDef novel fill:#d5e8d4,stroke:#82b366,stroke-width:2px;
+    classDef novel fill:#d5e8d4,stroke:#82b366,stroke-width:2px,color:#000;
     class S2,Trans novel;
