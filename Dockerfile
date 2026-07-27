@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 WORKDIR /app
 
@@ -6,12 +6,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libglib2.0-0 libgl1 \
     && rm -rf /var/lib/apt/lists/*
 
-# CPU-only torch, pinned to the exact version in requirements.txt so the
-# `pip install -r requirements.txt` step below sees it as already satisfied
-# and skips re-resolving it from the default (CUDA-bundled) PyPI wheel.
-RUN pip install --no-cache-dir \
-    torch==2.13.0 torchvision==0.28.0 --index-url https://download.pytorch.org/whl/cpu
-
+# NOTE: torch==2.13.0 (pinned in requirements.txt) has no build on the
+# CPU-only index (download.pytorch.org/whl/cpu tops out around 2.9.x for
+# any Python version as of this writing) — the CPU-only build channel
+# lags several minor versions behind the main PyPI releases. Installing
+# from the default index instead, which does have this exact version,
+# at the cost of a larger image (CUDA runtime libs bundled in the wheel
+# even though they're unused on CPU). Revisit if/when the CPU index
+# catches up to this torch version.
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
