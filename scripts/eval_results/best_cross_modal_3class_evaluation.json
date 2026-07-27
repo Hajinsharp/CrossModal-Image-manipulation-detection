@@ -1,0 +1,85 @@
+{
+  "timestamp": "2026-07-27T18:15:12.730592+00:00",
+  "weights": "C:\\Users\\subha\\Downloads\\best_cross_modal_3class.pth",
+  "num_classes": 3,
+  "class_names": [
+    "Authentic",
+    "Manipulated",
+    "AI-Generated"
+  ],
+  "dataset_paths": {
+    "casia_auth": "C:\\Users\\subha\\Downloads\\CASIA2\\Au",
+    "casia_manip": "C:\\Users\\subha\\Downloads\\CASIA2\\Tp",
+    "ai_generated": "C:\\Users\\subha\\Downloads\\CIFake\\cifake\\train\\FAKE"
+  },
+  "split": {
+    "stratified": true,
+    "seed": 42,
+    "train_frac": 0.7,
+    "val_frac": 0.15,
+    "test_frac": 0.15,
+    "max_per_class": 5123,
+    "pool_size_before_cap": 62638,
+    "total_pool_size": 15369,
+    "test_size": 2307,
+    "test_class_counts": {
+      "Authentic": 769,
+      "Manipulated": 769,
+      "AI-Generated": 769
+    }
+  },
+  "metrics": {
+    "accuracy": 0.9748591244039878,
+    "per_class": [
+      {
+        "class": "Authentic",
+        "precision": 0.9903448275862069,
+        "recall": 0.9336801040312094,
+        "f1": 0.9611780455153949,
+        "support": 769
+      },
+      {
+        "class": "Manipulated",
+        "precision": 0.9372693726937269,
+        "recall": 0.9908972691807543,
+        "f1": 0.9633375474083439,
+        "support": 769
+      },
+      {
+        "class": "AI-Generated",
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 769
+      }
+    ],
+    "macro_avg": {
+      "precision": 0.9758714000933112,
+      "recall": 0.9748591244039879,
+      "f1": 0.9748385309745796
+    },
+    "weighted_avg": {
+      "precision": 0.9758714000933113,
+      "recall": 0.9748591244039878,
+      "f1": 0.9748385309745796
+    },
+    "confusion_matrix": [
+      [
+        718,
+        51,
+        0
+      ],
+      [
+        7,
+        762,
+        0
+      ],
+      [
+        0,
+        0,
+        769
+      ]
+    ]
+  },
+  "roc": null
+}

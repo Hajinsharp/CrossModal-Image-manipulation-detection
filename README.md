@@ -90,7 +90,13 @@ This is below the thesis's own headline figure (Table 7: Acc=95.35%, F1=94.46%, 
 
 CrossModalFusionNet clearly outperforms plain-EfficientNetB0 (no forensic streams) by a wide margin, but loses to DeepForgeryNet on every metric — worth investigating (ResNet50+LSTM backbone vs. our 5-stream fusion) rather than glossing over.
 
-A 3-class extension (Authentic / Traditionally Manipulated / AI-Generated), fine-tuned on CASIA2 + CIFAKE (Stable Diffusion v1.4), reaches 96.36% accuracy and macro F1 0.9638 on a held-out validation set (3,074 images), with perfect AI-Generated detection (F1=1.000) — see `thesis_report.pdf`, Table 18.
+### 3-class extension (Authentic / Traditionally Manipulated / AI-Generated)
+
+Fine-tuned from the checkpoint above on CASIA2 + CIFAKE (Stable Diffusion v1.4) — see `thesis_report.pdf`, Table 18, for the thesis's own figure: 96.36% accuracy, macro F1 0.9638 on a held-out *validation* set (3,074 images), with perfect AI-Generated detection (F1=1.000).
+
+Re-run with [`scripts/evaluate.py`](scripts/evaluate.py) on 2026-07-27 (`best_cross_modal_3class.pth`, real CASIA2 + CIFAKE data, stratified split, seed 42, each class capped at 5,123 images to match the thesis's own balancing strategy, Table 16): **97.49% accuracy, macro F1 0.9748** (Authentic F1=0.9612, Manipulated F1=0.9633, AI-Generated F1=1.0000 — again perfect, 0 misclassifications either direction). Confusion matrix: 51 Authentic→Manipulated, 7 Manipulated→Authentic.
+
+**This number is higher than the thesis's own figure, and that is not a good sign here** — the opposite of the 2-class case above. The 3-class fine-tuning stage (notebook Section 14) only ever carved an 80/20 train/val split with no held-out test set, so a freshly-drawn stratified split very likely overlaps with images the model was directly trained on. A higher score under these conditions is consistent with train/test leakage inflating the result, not genuine improvement. Until the model is retrained with a true 3-way split, treat both this number and the thesis's Table 18 figure as upper bounds, not clean generalization estimates. Full breakdown in [`scripts/eval_results/best_cross_modal_3class_evaluation.json`](scripts/eval_results/best_cross_modal_3class_evaluation.json).
 
 [1] Sardhara, Vekariya, Pathak, Dash. "DeepForgeryNet: a hybrid CNN–LSTM and transfer learning framework for robust image forgery and deepfake detection." _Frontiers in Artificial Intelligence_, vol. 9, 2026.
 [2] Buyuk, Karatas Baydogmus, Buldu, Tulendiyeva, Baizhumanova. "Digital Image Forgery Detection Using Transfer Learning." arXiv:2605.08167, 2026.

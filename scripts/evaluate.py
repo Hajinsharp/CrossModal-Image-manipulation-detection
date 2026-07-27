@@ -98,6 +98,33 @@ def build_samples(
     return samples
 
 
+def cap_per_class(
+    samples: list[tuple[str, int]], max_per_class: int | None, seed: int
+) -> list[tuple[str, int]]:
+    """Randomly subsample each class down to at most max_per_class images
+    (seeded, so reproducible). Mirrors the thesis's own 3-class balancing
+    strategy (Table 16: cap each class at the smallest class's size) —
+    useful when one class (e.g. the full 60k-image CIFAKE pool) dwarfs the
+    others and would otherwise blow up eval runtime for no rigor benefit."""
+    if max_per_class is None:
+        return samples
+
+    by_class: dict[int, list[tuple[str, int]]] = {}
+    for path, label in samples:
+        by_class.setdefault(label, []).append((path, label))
+
+    g = torch.Generator().manual_seed(seed)
+    capped: list[tuple[str, int]] = []
+    for label in sorted(by_class):
+        cls_samples = by_class[label]
+        if len(cls_samples) > max_per_class:
+            perm = torch.randperm(len(cls_samples), generator=g).tolist()[:max_per_class]
+            capped.extend(cls_samples[i] for i in perm)
+        else:
+            capped.extend(cls_samples)
+    return capped
+
+
 def test_split(
     samples: list[tuple[str, int]], train_frac: float, val_frac: float, seed: int
 ) -> list[tuple[str, int]]:
@@ -253,6 +280,12 @@ def main() -> None:
     parser.add_argument("--train-frac", type=float, default=0.70)
     parser.add_argument("--val-frac", type=float, default=0.15)
     parser.add_argument("--batch-size", type=int, default=16)
+    parser.add_argument(
+        "--max-per-class", type=int, default=None,
+        help="Randomly subsample each class down to at most N images before splitting "
+             "(seeded). Use this to cap a much larger class (e.g. full CIFAKE) so eval "
+             "runtime stays proportional — mirrors the thesis's own balancing strategy.",
+    )
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     parser.add_argument("--output", type=Path, default=None, help="Where to save the JSON report")
     args = parser.parse_args()
@@ -291,6 +324,11 @@ def main() -> None:
         )
 
     samples = build_samples(args.casia_auth, args.casia_manip, args.ai_generated)
+    pool_size_before_cap = len(samples)
+    samples = cap_per_class(samples, args.max_per_class, args.seed)
+    if args.max_per_class is not None:
+        print(f"Capped each class at {args.max_per_class} images "
+              f"(pool: {pool_size_before_cap} -> {len(samples)})")
     test_samples = test_split(samples, args.train_frac, args.val_frac, args.seed)
 
     counts = np.bincount([lbl for _, lbl in test_samples], minlength=num_classes)
@@ -367,6 +405,8 @@ def main() -> None:
             "train_frac": args.train_frac,
             "val_frac": args.val_frac,
             "test_frac": round(1 - args.train_frac - args.val_frac, 4),
+            "max_per_class": args.max_per_class,
+            "pool_size_before_cap": pool_size_before_cap,
             "total_pool_size": len(samples),
             "test_size": len(test_samples),
             "test_class_counts": {name: int(c) for name, c in zip(class_names, counts)},
