@@ -118,14 +118,16 @@ python src/predict.py --image assets/sample_authentic.jpg
 
 Weights (~520 MB, 3-class) download automatically from [Hugging Face Hub](https://huggingface.co/Roy407/crossmodalfusionnet) on first run and are cached locally afterward — no manual download step.
 
+`assets/sample_authentic.jpg` and `assets/sample_manipulated.jpg` are both derived from public-domain USFWS photographs ([landscape](https://commons.wikimedia.org/wiki/File:Dusk_landscape_high_resolution.jpg), [pronghorn](https://commons.wikimedia.org/wiki/File:Pronghorn_Antelope_USFWS.jpg)) rather than the CASIA2 dataset — CASIA2's own redistribution terms are unclear (see "Reproducing the results" further down), so nothing derived from it ships in this repo. The "manipulated" sample is a splice of the two, built for this repo — it is *not* reliably caught by the model (79% confidence Authentic), which is itself a real, honest data point: it's out-of-distribution relative to CASIA2's specific tampering pipeline, consistent with the cross-dataset generalisation gap documented above.
+
 Expected output (this is real output from this exact command, not idealised):
 
 ```
-Prediction: Authentic (98.2%)
+Prediction: Authentic (86.5%)
 
-  Authentic        0.9819
-  AI-Generated     0.0111
-  Manipulated      0.0070
+  Authentic        0.8652
+  Manipulated      0.1208
+  AI-Generated     0.0140
 ```
 
 ---
@@ -158,10 +160,25 @@ curl -F "file=@assets/sample_authentic.jpg" http://localhost:8000/predict
 ```
 
 ```json
-{"prediction":"Authentic","confidence":0.9819,"scores":{"Authentic":0.9819,"Manipulated":0.007,"AI-Generated":0.0111}}
+{"prediction":"Authentic","confidence":0.8652,"scores":{"Authentic":0.8652,"Manipulated":0.1208,"AI-Generated":0.014}}
 ```
 
 Interactive docs (upload an image from a browser, no client code needed): `http://localhost:8000/docs`
+
+---
+
+## 🔁 Reproducing the results
+
+1. **Get the data.** CASIA2 is not bundled here — its redistribution terms aren't clearly stated by the original source ([NLPR/CASIA, gated access](http://forensics.idealtest.org)), only that it's free for research use, so nothing derived from it ships in this repo (see the note in Quickstart above). Obtain `Au/` and `Tp/` yourself. For the 3-class checkpoint you'll also need [CIFAKE](https://www.kaggle.com/datasets/birdy654/cifake-real-and-ai-generated-synthetic-images)'s `train/FAKE` split.
+2. **Run the evaluation:**
+   ```bash
+   python scripts/evaluate.py --weights best_cross_modal.pth \
+       --casia-auth path/to/CASIA2/Au --casia-manip path/to/CASIA2/Tp
+   # 3-class: add --ai-generated path/to/cifake/train/FAKE --max-per-class 5123
+   ```
+3. Full per-class metrics, confusion matrix, and ROC analysis print to stdout and save as JSON under `scripts/eval_results/`.
+
+Runtime: ~16 minutes for the 2-class checkpoint (1,894 test images), ~23 minutes for the 3-class checkpoint (2,307 test images) — both measured on a CPU-only machine (no GPU). The numbers in the Results table above came from exactly these runs.
 
 ---
 
