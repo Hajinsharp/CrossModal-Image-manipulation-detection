@@ -1,5 +1,7 @@
 # 🕵️‍♂️ Real-Time Multi-Modal Image Manipulation Detection
 
+[![CI](https://github.com/Hajinsharp/CrossModal-Image-manipulation-detection/actions/workflows/ci.yaml/badge.svg)](https://github.com/Hajinsharp/CrossModal-Image-manipulation-detection/actions/workflows/ci.yaml)
+
 **A Thesis Project on Progressive Deep Learning Forensics for Image Tampering and AI Generation Detection**
 
 This repository contains the code and methodology for a progressive ablation study on image manipulation detection. It explores the journey from traditional statistical forensics to a novel **Cross-Modal Transformer Fusion** architecture capable of cross-referencing multiple forensic signals in real-time.
@@ -100,3 +102,28 @@ Re-run with [`scripts/evaluate.py`](scripts/evaluate.py) on 2026-07-27 (`best_cr
 
 [1] Sardhara, Vekariya, Pathak, Dash. "DeepForgeryNet: a hybrid CNN–LSTM and transfer learning framework for robust image forgery and deepfake detection." _Frontiers in Artificial Intelligence_, vol. 9, 2026.
 [2] Buyuk, Karatas Baydogmus, Buldu, Tulendiyeva, Baizhumanova. "Digital Image Forgery Detection Using Transfer Learning." arXiv:2605.08167, 2026.
+
+---
+
+## 🚀 Quickstart
+
+```bash
+git clone https://github.com/Hajinsharp/CrossModal-Image-manipulation-detection.git
+cd CrossModal-Image-manipulation-detection
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python src/predict.py --image assets/sample_authentic.jpg
+```
+
+Weights (~520 MB, 3-class) download automatically from [Hugging Face Hub](https://huggingface.co/Roy407/crossmodalfusionnet) on first run and are cached locally afterward — no manual download step.
+
+Expected output (this is real output from this exact command, not idealised):
+
+```
+Prediction: Authentic (98.2%)
+
+  Authentic        0.9819
+  AI-Generated     0.0111
+  Manipulated      0.0070
+```
