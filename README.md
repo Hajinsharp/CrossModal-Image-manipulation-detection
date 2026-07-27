@@ -127,3 +127,57 @@ Prediction: Authentic (98.2%)
   AI-Generated     0.0111
   Manipulated      0.0070
 ```
+
+---
+
+## 🩺 Run the API
+
+```bash
+python -m uvicorn api:app --app-dir src --host 0.0.0.0 --port 8000
+```
+
+Or via Docker:
+
+```bash
+docker build -t crossmodalfusionnet .
+docker run -p 8000:8000 crossmodalfusionnet
+```
+
+Real output from a local run against the commands below:
+
+```bash
+curl http://localhost:8000/health
+```
+
+```json
+{"status":"ok","classes":["Authentic","Manipulated","AI-Generated"]}
+```
+
+```bash
+curl -F "file=@assets/sample_authentic.jpg" http://localhost:8000/predict
+```
+
+```json
+{"prediction":"Authentic","confidence":0.9819,"scores":{"Authentic":0.9819,"Manipulated":0.007,"AI-Generated":0.0111}}
+```
+
+Interactive docs (upload an image from a browser, no client code needed): `http://localhost:8000/docs`
+
+---
+
+## 📁 Repository layout
+
+| Path                          | Purpose                                     |
+| ------------------------------ | -------------------------------------------- |
+| `src/model.py`                | `CrossModalFusionNet` architecture          |
+| `src/preprocess.py`           | ELA / noise / DCT stream extraction         |
+| `src/predict.py`              | Single-image inference                      |
+| `src/api.py`                  | FastAPI serving layer                       |
+| `scripts/evaluate.py`         | Reproduces the results table above          |
+| `scripts/verify_checkpoint.py`| Checkpoint sanity-checker                   |
+| `tests/`                      | API test suite (6 tests, run in CI)         |
+| `assets/`                     | Sample images used by Quickstart            |
+| `Dockerfile`                  | CPU-only serving image                      |
+| `.github/workflows/ci.yaml`   | CI: tests + Docker build on every push      |
+| `RealTimeMultiModal_Fixed.ipynb` | Canonical training notebook (all 7 model variants) |
+| `thesis_report.pdf`           | Full thesis writeup                         |
