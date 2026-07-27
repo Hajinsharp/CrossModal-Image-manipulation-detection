@@ -1,0 +1,111 @@
+{
+  "timestamp": "2026-07-27T17:02:59.829369+00:00",
+  "weights": "C:\\Users\\subha\\Downloads\\best_cross_modal.pth",
+  "num_classes": 2,
+  "class_names": [
+    "Authentic",
+    "Manipulated"
+  ],
+  "dataset_paths": {
+    "casia_auth": "C:\\Users\\subha\\Downloads\\CASIA2\\Au",
+    "casia_manip": "C:\\Users\\subha\\Downloads\\CASIA2\\Tp",
+    "ai_generated": null
+  },
+  "split": {
+    "stratified": true,
+    "seed": 42,
+    "train_frac": 0.7,
+    "val_frac": 0.15,
+    "test_frac": 0.15,
+    "total_pool_size": 12614,
+    "test_size": 1894,
+    "test_class_counts": {
+      "Authentic": 1125,
+      "Manipulated": 769
+    }
+  },
+  "metrics": {
+    "accuracy": 0.9181626187961985,
+    "per_class": [
+      {
+        "class": "Authentic",
+        "precision": 0.997946611909651,
+        "recall": 0.864,
+        "f1": 0.9261553120533588,
+        "support": 1125
+      },
+      {
+        "class": "Manipulated",
+        "precision": 0.8336956521739131,
+        "recall": 0.9973992197659298,
+        "f1": 0.9082297217288338,
+        "support": 769
+      }
+    ],
+    "macro_avg": {
+      "precision": 0.915821132041782,
+      "recall": 0.930699609882965,
+      "f1": 0.9171925168910963
+    },
+    "weighted_avg": {
+      "precision": 0.9312576002746021,
+      "recall": 0.9181626187961985,
+      "f1": 0.9188771816628837
+    },
+    "confusion_matrix": [
+      [
+        972,
+        153
+      ],
+      [
+        2,
+        767
+      ]
+    ]
+  },
+  "roc": {
+    "auc": 0.9838763184510909,
+    "optimal_threshold": 0.9244561195373535,
+    "tpr_at_optimal": 0.9791937581274383,
+    "fpr_at_optimal": 0.10488888888888889,
+    "metrics_at_optimal_threshold": {
+      "accuracy": 0.9292502639915523,
+      "per_class": [
+        {
+          "class": "Authentic",
+          "precision": 0.9843597262952102,
+          "recall": 0.8951111111111111,
+          "f1": 0.9376163873370578,
+          "support": 1125
+        },
+        {
+          "class": "Manipulated",
+          "precision": 0.8645235361653272,
+          "recall": 0.9791937581274383,
+          "f1": 0.9182926829268292,
+          "support": 769
+        }
+      ],
+      "macro_avg": {
+        "precision": 0.9244416312302687,
+        "recall": 0.9371524346192747,
+        "f1": 0.9279545351319435
+      },
+      "weighted_avg": {
+        "precision": 0.9357039553290645,
+        "recall": 0.9292502639915523,
+        "f1": 0.9297705960532849
+      },
+      "confusion_matrix": [
+        [
+          1007,
+          118
+        ],
+        [
+          16,
+          753
+        ]
+      ]
+    }
+  }
+}

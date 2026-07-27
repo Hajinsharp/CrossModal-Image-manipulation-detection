@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Model weights and data — too large for GitHub
+*.pth
+*.pt
+*.ckpt
+*.h5
+data/
+datasets/
+checkpoints/
+
+# Notebooks and experiment noise
+.ipynb_checkpoints/
+runs/
+wandb/
+lightning_logs/
+*.log
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+*.pth
+*.pt
+*.ckpt
