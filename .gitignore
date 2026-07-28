@@ -4,6 +4,7 @@ __pycache__/
 .venv/
 venv/
 *.egg-info/
+.env
 
 # Model weights and data — too large for GitHub
 *.pth

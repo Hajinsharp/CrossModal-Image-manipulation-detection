@@ -20,6 +20,18 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ ./src/
 COPY assets/ ./assets/
 
+# Bake the model weights into the image at build time (one-time download
+# from Cloud Build's infrastructure against a public repo, no auth needed)
+# so the app never has to fetch ~520 MB from HF Hub on a cold start --
+# eliminates both the startup latency and the rate-limit exposure that
+# comes from every scale-from-zero event hitting HF Hub from Cloud Run's
+# heavily-shared serving IP range. See src/predict.py's WEIGHTS_LOCAL_PATH.
+RUN python -c "\
+import shutil; \
+from huggingface_hub import hf_hub_download; \
+p = hf_hub_download(repo_id='Roy407/crossmodalfusionnet', filename='weights.pth'); \
+shutil.copy(p, '/app/src/weights.pth')"
+
 ENV HF_HOME=/app/.cache
 EXPOSE 8000
 

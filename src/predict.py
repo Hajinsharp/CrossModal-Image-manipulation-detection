@@ -15,14 +15,26 @@ CLASS_NAMES = ["Authentic", "Manipulated", "AI-Generated"]
 HF_REPO = "Roy407/crossmodalfusionnet"
 WEIGHTS_FILE = "weights.pth"
 
+# The Docker image bakes weights.pth in at build time (see Dockerfile) so a
+# cold start loads a local file instead of hitting HF Hub over the network
+# -- avoids both cold-start latency and rate-limit exposure on every
+# scale-from-zero event. Falls back to the Hub download for local dev,
+# where this file won't exist.
+WEIGHTS_LOCAL_PATH = Path(__file__).resolve().parent / WEIGHTS_FILE
+
 _model: torch.nn.Module | None = None
 
 
 def load_model(device: str = "cpu") -> torch.nn.Module:
-    """Load the model once per process, downloading weights on first call."""
+    """Load the model once per process, downloading weights on first call
+    unless a baked-in local copy is already present."""
     global _model
     if _model is None:
-        weights_path = hf_hub_download(repo_id=HF_REPO, filename=WEIGHTS_FILE)
+        weights_path = (
+            WEIGHTS_LOCAL_PATH
+            if WEIGHTS_LOCAL_PATH.exists()
+            else hf_hub_download(repo_id=HF_REPO, filename=WEIGHTS_FILE)
+        )
         model = CrossModalFusionNet(num_classes=len(CLASS_NAMES), pretrained=False)
         state = torch.load(weights_path, map_location=device)
         model.load_state_dict(state)
