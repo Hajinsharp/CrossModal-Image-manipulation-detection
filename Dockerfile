@@ -23,4 +23,8 @@ COPY assets/ ./assets/
 ENV HF_HOME=/app/.cache
 EXPOSE 8000
 
-CMD ["uvicorn", "api:app", "--app-dir", "src", "--host", "0.0.0.0", "--port", "8000"]
+# Shell form (not exec-form JSON array) so $PORT actually expands. Cloud
+# Run injects PORT at runtime (defaults to 8080) and requires the
+# container to listen on it; falls back to 8000 for local `docker run`,
+# matching the port this Dockerfile has always exposed.
+CMD uvicorn api:app --app-dir src --host 0.0.0.0 --port ${PORT:-8000}
