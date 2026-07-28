@@ -2,6 +2,10 @@
 
 [![CI](https://github.com/Hajinsharp/CrossModal-Image-manipulation-detection/actions/workflows/ci.yaml/badge.svg)](https://github.com/Hajinsharp/CrossModal-Image-manipulation-detection/actions/workflows/ci.yaml)
 
+**[Live demo](https://crossmodalfusionnet-938461854277.us-central1.run.app/docs)** · **[Weights](https://huggingface.co/Roy407/crossmodalfusionnet)**
+
+*Demo runs on Cloud Run, scaled to zero when idle — the first request after a period of inactivity can take 30-60s to cold-start; subsequent requests are fast (~4s). Use the `/docs` link for an interactive Swagger UI, no code required.*
+
 **A Thesis Project on Progressive Deep Learning Forensics for Image Tampering and AI Generation Detection**
 
 This repository contains the code and methodology for a progressive ablation study on image manipulation detection. It explores the journey from traditional statistical forensics to a novel **Cross-Modal Transformer Fusion** architecture capable of cross-referencing multiple forensic signals in real-time.
